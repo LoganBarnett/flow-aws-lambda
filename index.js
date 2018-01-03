@@ -351,3 +351,55 @@ export type CustomAuthorizerHandler = (event: CustomAuthorizerEvent, context: Co
 export type Callback = (error: ?Error, result?: any) => void;
 export type ProxyCallback = (error: ?Error, result?: ProxyResult) => void;
 export type CustomAuthorizerCallback = (error: ?Error, result?: AuthResponse) => void;
+
+/**
+ * CloudFront using Lambda@Edge.
+ * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-event-structure.html
+ */
+
+export type EdgeHeader = {[string]: Array<{key: string, value: string}>}
+
+export type SslProtocol = 'TLSv1.2' | 'TLSv1.1' | 'TLSv1' | 'SSLv3'
+
+export type EdgeRequestCustomOrigin = {
+  customHeaders: EdgeHeader,
+  domainName: string,
+  keepaliveTimeout: number,
+  path: string,
+  port: number,
+  protocol: 'http' | 'https',
+  readTimeout: number,
+  sslProtocols: Array<SslProtocol>,
+}
+
+export type EdgeRequestS3Origin = {
+  authMethod: 'origin-access-identity' | 'none',
+  customHeaders: EdgeHeader,
+  domainName: string,
+  path: string,
+  region: string,
+}
+
+export type EdgeRequestOriginContainer =
+  | { custom: EdgeRequestCustomOrigin }
+  | { s3: EdgeRequestS3Origin }
+
+export type EdgeRequestRecord = {
+  cf: {
+    config: {
+      +distributionId: string,
+      +requestId: string,
+    },
+    request: {
+      +clientIp: string,
+      +method: string,
+      querystring: string,
+      headers: EdgeHeader,
+      origin: EdgeRequestOriginContainer,
+      uri: string,
+    }
+  }
+}
+export type EdgeRequestEvent = {
+  Records: Array<EdgeRequestRecord>,
+}
