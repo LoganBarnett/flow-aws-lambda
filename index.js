@@ -384,22 +384,26 @@ export type EdgeRequestOriginContainer =
   | { custom: EdgeRequestCustomOrigin }
   | { s3: EdgeRequestS3Origin }
 
+export type EdgeRequest = {
+  +clientIp: string,
+  +method: string,
+  querystring: string,
+  headers: EdgeHeader,
+  origin: EdgeRequestOriginContainer,
+  uri: string,
+}
+
 export type EdgeRequestRecord = {
   cf: {
     config: {
       +distributionId: string,
       +requestId: string,
     },
-    request: {
-      +clientIp: string,
-      +method: string,
-      querystring: string,
-      headers: EdgeHeader,
-      origin: EdgeRequestOriginContainer,
-      uri: string,
-    }
+    request: EdgeRequest,
   }
 }
 export type EdgeRequestEvent = {
   Records: Array<EdgeRequestRecord>,
 }
+
+export type EdgeCallback = (error?: Error, result: EdgeRequest) => void
