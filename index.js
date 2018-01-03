@@ -406,4 +406,5 @@ export type EdgeRequestEvent = {
   Records: Array<EdgeRequestRecord>,
 }
 
-export type EdgeCallback = (error?: Error, result: EdgeRequest) => void
+export type EdgeCallback = ((error: void, result: EdgeRequest) => void) &
+  ((error: Error, unusedResult?: void) => void)
